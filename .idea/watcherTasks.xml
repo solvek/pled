@@ -16,7 +16,7 @@
       <option name="outputFromStdout" value="false" />
       <option name="passParentEnvs" value="true" />
       <option name="program" value="$PROJECT_DIR$/node_modules/babel-cli/bin/babel.js" />
-      <option name="scopeName" value="Project Files" />
+      <option name="scopeName" value="ExceptTests" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$FileDir$" />
       <envs />
