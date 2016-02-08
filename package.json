@@ -28,5 +28,8 @@
     "jsdoc-to-markdown": "^1.3.3",
     "chai": "*",
     "mocha": "*"
+  },
+  "dependencies": {
+    "nock": "^7.0.2"
   }
 }

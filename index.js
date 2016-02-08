@@ -76,7 +76,30 @@ class Pled{
     }
 
     static loadRemote(url){
+        return new Promise(
+            function(resolve, reject){
+                var req = http.get(urlParse(url), function (res) {
+                    if (res.statusCode !== 200) {
+                        reject(new Error("Http returned status: "+req.statusCode));
+                        return;
+                    }
 
+                    var data = '';
+
+                    res.on('data', function (chunk) {
+                        data += chunk;
+                    });
+                    res.on('end', function () {
+                        resolve(data);
+                    });
+                });
+
+                req.on('error', function (e) {
+                    reject(e);
+                });
+                req.end();
+            }
+        );
     }
 
     static loadSource(url){
