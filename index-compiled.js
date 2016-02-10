@@ -25,6 +25,10 @@ class Pled {
             options = { sources: options };
         }
 
+        if (!options.cacheTime) {
+            options.cacheTime = 5 * 24 * 60 * 60 * 1000;
+        }
+
         this.options = options;
     }
 
@@ -50,10 +54,46 @@ class Pled {
     execute() {}
 
     /**
-     * Loads playlist from cache file.
-     * If the cache file does not exists or it is to old (@see option.cacheTime) this methods fails
+     * @typedef CacheStatus
+     * @type Object
+     * @property {Symbol} status Cache status: CACHE_STATUS_OK, CACHE_STATUS_MISSING, CACHE_STATUS_OUTDATED
+     * @property {string} [content] Optional content. Specified only if cache status is CACHE_STATUS_OK
      */
-    loadCache() {}
+
+    /**
+     * Loads playlist from cache file.
+     * @returns {Promise<CacheStatus>}
+     */
+    loadCache() {
+        let options = this.options;
+
+        if (!options.cachePath) {
+            return Promise.reject(new Error("Path to cache file not specified"));
+        }
+
+        return new Promise(function (resolve) {
+            fs.stat(options.cachePath, (err, stat) => {
+                if (err) {
+                    resolve({ status: Pled.CACHE_STATUS_MISSING });
+                    return;
+                }
+
+                let now = new Date();
+                let age = now - stat.mtime;
+
+                //console.log(`Cache time: ${options.cacheTime}, now: ${now}, file time: ${stat.mtime}, age: ${age}`);
+
+                if (age > options.cacheTime) {
+                    resolve({ status: Pled.CACHE_STATUS_OUTDATED });
+                    return;
+                }
+
+                resolve(Pled.loadLocal(options.cachePath).then(content => {
+                    return { status: Pled.CACHE_STATUS_OK, content: content };
+                }));
+            });
+        });
+    }
 
     static loadLocal(path) {
         return new Promise(function (resolve, reject) {
@@ -94,12 +134,16 @@ class Pled {
 
     static loadSource(url) {
         if (url.startsWith('http://') || url.startsWith('http://')) {
-            return loadRemote(url);
+            return Pled.loadRemote(url);
         }
 
-        return loadLocal(url);
+        return Pled.loadLocal(url);
     }
 }
+
+Pled.CACHE_STATUS_OK = Symbol();
+Pled.CACHE_STATUS_MISSING = Symbol();
+Pled.CACHE_STATUS_OUTDATED = Symbol();
 
 module.exports = Pled;
 
