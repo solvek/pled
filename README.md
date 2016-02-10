@@ -1,22 +1,40 @@
 # Overview
 Merging and transforming m3u playlists
 
+# Installation
 
-# API Reference
-    <a name="Pled"></a>
-## Pled
-**Kind**: global class  
-<a name="new_Pled_new"></a>
-### new Pled(options)
+`npm install pled`
 
-| Param | Type | Description |
-| --- | --- | --- |
-| options | <code>Object</code> &#124; <code>Array.&lt;string&gt;</code> | Pled options object or array of sources |
-| options.sources | <code>Array.&lt;string&gt;</code> | Sources of m3u files. Each source is either a path to local file of a url to an http file (starting from "http://" or "https://") |
-| [options.filters] | <code>[Array.&lt;FilterFunction&gt;](#FilterFunction)</code> | Sequence of filters |
+# Web server for playlists processing
+
+It is the best to use Pled in pair with express.js. Directory `sample` contains simple web server which returns combined playlist.
+
+```
+
+var express = require('express');
+var app = express();
+
+var Pled = require('../index');
 
 
-# Documentation generating
-Do not modify `README.md` it will be regenerated. Modify 'tools/README.hbs' instead.
-Regenerate readme: `npm run-script docs`
+var sources = ['http://iptv.slynet.tv/FreeSlyNet.m3u', 'http://iptv.slynet.tv/FreeBestTV.m3u'];
 
+app.get('/', function (req, res) {
+    var pled = new Pled({
+        sources: sources
+    });
+
+    pled.handleRequest(req, res);
+});
+
+app.listen(3000, function () {
+    console.log('Example app listening on port 3000!');
+});
+
+```
+
+Now enter in browser `http://localhost:3000` and you'll get combined playlist in response
+
+# API Documentation
+
+[Here](api.md)
