@@ -9,8 +9,7 @@ Merging and transforming m3u playlists
 
 It is the best to use Pled in pair with express.js. Directory `sample` contains simple web server which returns combined playlist.
 
-```
-
+```javascript
 var express = require('express');
 var app = express();
 
@@ -37,4 +36,4 @@ Now enter in browser `http://localhost:3000` and you'll get combined playlist in
 
 # API Documentation
 
-[Here](api.md)
+[Here](./api.md)
