@@ -9,6 +9,8 @@ var fs = require('fs');
 var http = require("http");
 var urlParse = require("url").parse;
 
+var m3u = require('m3ujs');
+
 class Pled {
     /**
      * @param {Object|string[]} options Pled options object or array of sources
@@ -17,7 +19,6 @@ class Pled {
      * @param {FilterFunction[]} [options.filters] Sequence of filters
      * @param {string} [options.cachePath] Path to cache file
      * @param {int} [options.cacheTime=5*24*60*60*1000] Time for cache in milliseconds. By default 5 days
-     * @param {boolean} [options.forceReload] If cache file is specified this parameter allows
      * to not use the cache but regenerate content (however resulting content still can be saved to the cache)
      */
     constructor(options) {
@@ -27,6 +28,10 @@ class Pled {
 
         if (!options.cacheTime) {
             options.cacheTime = 5 * 24 * 60 * 60 * 1000;
+        }
+
+        if (!options.filters) {
+            options.filters = [];
         }
 
         this.options = options;
@@ -43,15 +48,59 @@ class Pled {
 
     /**
      * It is possible to use Pled in pair with [Express.js]{@link http://expressjs.com/}. Handles HTTP request.
+     * Query string can have "force=true" query parameter. This allows to force reload data (ignoring cache)
      * See `samples` directory for an example.
      */
-    handleRequest(request, response) {}
+    handleRequest(request, response) {
+        execute(request.query.force).then(content => {
+            //response.status(200);
+            response.setHeader('Content-type', 'audio/x-mpegurl');
+            response.setHeader("Content-Disposition", "attachment;filename=playlist.m3u");
+            response.charset = 'UTF-8';
+            response.write(content);
+            response.end();
+        }).catch(error => {
+            response.status(500);
+            response.send("Failed to generate the playlist.m3u. Error: " + error.message);
+        });
+    }
 
     /**
      * Processes play list sources and generates resulting playlist as string
-     * @returns Promise with a string value - content of m3u
+     * If up to date cache content is available then cache will be returned without reloading
+     * @param {bool} [forceReload] If true then content will be reloaded ignoring cache however cache still can be stored after regenerating new content
+     * @returns {Promise<string>} Promise with a string value - content of m3u
      */
-    execute() {}
+    execute(forceReload) {
+        if (!this.options.cachePath || forceReload) {
+            return this.createNewContent();
+        }
+
+        let obj = this;
+
+        return this.loadCache().then(cache => {
+            if (cache.status == Pled.CACHE_STATUS_OK) {
+                return cache.content;
+            }
+
+            return obj.createNewContent();
+        });
+    }
+
+    /**
+     * Creates content from sources omitting cache
+     * @returns {Promise<string>} Promise with a string value - content of m3u
+     */
+    createNewContent() {
+        let obj = this;
+        return this._handleSourceTail(0, { tracks: [] }).then(result => {
+            let content = m3u.format(result);
+            if (obj.options.cachePath) {
+                obj.saveCache(content);
+            }
+            return content;
+        });
+    }
 
     /**
      * @typedef CacheStatus
@@ -91,6 +140,54 @@ class Pled {
                 resolve(Pled.loadLocal(options.cachePath).then(content => {
                     return { status: Pled.CACHE_STATUS_OK, content: content };
                 }));
+            });
+        });
+    }
+
+    saveCache(content) {
+        let obj = this;
+        return new Promise(function (resolve, reject) {
+            fs.writeFile(obj.options.cachePath, content, err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    _handleSourceTail(sourceIdx, result) {
+        if (sourceIdx >= this.options.sources.length) {
+            return result;
+        }
+
+        let source = this.options.sources[sourceIdx];
+
+        return _handleSource(source, result).then(function () {
+            return _handleSourceTail(sourceIdx + 1, result);
+        });
+    }
+
+    _handleSource(sourceIdx, result) {
+        let filters = this.options.filters;
+
+        return loadSource(source).then(content => {
+            let parsed = m3u.parse(content);
+            var filter;
+
+            parsed.tracks.forEach(track => {
+                for (var idx in filters) {
+                    filter = filters[idx];
+
+                    track = filter(track, source, result);
+
+                    if (!track) break;
+                }
+
+                if (track) {
+                    result.tracks.push(track);
+                }
             });
         });
     }

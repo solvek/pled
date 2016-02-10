@@ -32,7 +32,8 @@ app.listen(3000, function () {
 
 ```
 
-Now enter in browser `http://localhost:3000` and you'll get combined playlist in response
+Now enter in browser `http://localhost:3000` and you'll get combined playlist in response. 
+If url is `http://localhost:3000?force=true` then data will be reloaded
 
 # API Documentation
 
