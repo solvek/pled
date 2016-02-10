@@ -7,6 +7,7 @@ let should = require('chai').should();
 let assert = require('chai').assert;
 
 let nock = require('nock');
+var m3u = require('m3ujs');
 
 let Pled = require('../index');
 
@@ -125,6 +126,29 @@ describe("Loading cache", function(){
                 assert.isTrue(cache.status == Pled.CACHE_STATUS_OK);
                 cache.should.have.ownProperty('content');
                 cache.content.should.be.equal('simple text');
+            });
+    });
+});
+
+describe("Content generation", function(){
+    it("should do simple merge", function(){
+        let remote = nock('http://solvek.com')
+            .get('/playlist.m3u')
+            .reply(200, '#EXTM3U\n#EXTINF:0, Test from web\nhttp://stream.ua\n#EXTINF:50, Test from web2\nhttp://stream2.ua');
+
+        let pled = new Pled(['test.m3u', 'http://solvek.com/playlist.m3u']);
+
+        return pled.executeNoCache()
+            .then(content => {
+                let parsed = m3u.parse(content);
+
+                parsed.should.be.an('object');
+
+                let tracks = parsed.tracks;
+
+                tracks.should.be.an('array');
+
+                tracks.length.should.be.equal(5);
             });
     });
 });

@@ -48,11 +48,13 @@ class Pled{
 
     /**
      * It is possible to use Pled in pair with [Express.js]{@link http://expressjs.com/}. Handles HTTP request.
-     * Query string can have "force=true" query parameter. This allows to force reload data (ignoring cache)
+     * Query string can have "force=true" (or request.query.force true) query parameter. This allows to force reload data (ignoring cache)
      * See `samples` directory for an example.
      */
     handleRequest(request, response){
-        execute(request.query.force)
+        let loader = request.query.force ? executeNoCache : execute;
+
+        loader()
             .then(content =>{
                 //response.status(200);
                 response.setHeader('Content-type', 'audio/x-mpegurl');
@@ -70,12 +72,11 @@ class Pled{
     /**
      * Processes play list sources and generates resulting playlist as string
      * If up to date cache content is available then cache will be returned without reloading
-     * @param {bool} [forceReload] If true then content will be reloaded ignoring cache however cache still can be stored after regenerating new content
      * @returns {Promise<string>} Promise with a string value - content of m3u
      */
-    execute(forceReload){
-        if (!this.options.cachePath || forceReload){
-            return this.createNewContent();
+    execute(){
+        if (!this.options.cachePath){
+            return this.executeNoCache();
         }
 
         let obj = this;
@@ -86,7 +87,7 @@ class Pled{
                     return cache.content;
                 }
 
-                return obj.createNewContent();
+                return obj.executeNoCache();
             });
     }
 
@@ -94,7 +95,7 @@ class Pled{
      * Creates content from sources omitting cache
      * @returns {Promise<string>} Promise with a string value - content of m3u
      */
-    createNewContent(){
+    executeNoCache(){
         let obj = this;
         return this._handleSourceTail(0, {tracks: []})
             .then(result => {
@@ -170,17 +171,18 @@ class Pled{
         }
 
         let source = this.options.sources[sourceIdx];
+        let obj = this;
 
-        return _handleSource(source, result)
+        return this._handleSource(source, result)
             .then(function(){
-                return _handleSourceTail(sourceIdx+1, result);
+                return obj._handleSourceTail(sourceIdx+1, result);
             });
     }
 
-    _handleSource(sourceIdx, result){
+    _handleSource(source, result){
         let filters = this.options.filters;
 
-        return loadSource(source)
+        return Pled.loadSource(source)
          .then(content => {
                 let parsed = m3u.parse(content);
                 var filter;

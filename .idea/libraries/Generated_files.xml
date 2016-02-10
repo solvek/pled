@@ -2894,7 +2894,9 @@
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/fixed-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/small-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/anchor-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/m3ujs/test/test-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/blink-compiled.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/m3ujs/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/strike-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/repeat-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/index-compiled.js" />
@@ -7191,7 +7193,9 @@
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/fixed-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/small-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/anchor-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/m3ujs/test/test-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/blink-compiled.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/m3ujs/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/strike-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/repeat-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/jsdoc-api/node_modules/core-js/library/fn/string/index-compiled.js" />
