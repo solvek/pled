@@ -1,0 +1,14 @@
+{
+  "name": "pled-samples",
+  "version": "1.0.0",
+  "description": "Samples for Pled",
+  "main": "webserver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sergi Adamchuk",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
