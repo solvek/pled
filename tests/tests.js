@@ -152,3 +152,65 @@ describe("Content generation", function(){
             });
     });
 });
+
+describe("Filters", function(){
+    it("should replace for udp proxy", function(){
+        let track = {file: 'udp://@226.226.1.7:1234'};
+
+        let filter = Pled.filters.udpProxy('http://192.168.0.1:4000/udp/');
+
+        let newTrack = filter(track);
+
+        newTrack.file.should.be.equal('http://192.168.0.1:4000/udp/226.226.1.7:1234');
+    });
+
+    it("should run modifier for forStream", function(){
+        let track1 = {file: 'file1'},
+            track2 = {file: 'file2'};
+
+        var track1Called = false,
+            track2Called = false;
+
+        let modifier = function(track){
+            if (track.file == track1.file){
+                track1Called = true;
+                return 123;
+            }
+            if (track.file == track2.file){
+                track2Called = true;
+                return 456;
+            }
+        };
+
+        let filter = Pled.filters.forStream('file1', modifier);
+
+        assert(filter(track1), 123);
+        let track2Returned = filter(track2);
+        track2Returned.should.be.an('object');
+        track2Returned.should.have.ownProperty('file');
+        track2Returned.file.should.be.equal('file2');
+
+        assert(track1Called, "Track 1 should be modified");
+        assert(!track2Called, "Track 2 should not be modified");
+    });
+
+    it("should set image if no params", function(){
+        let track = {};
+
+        let newTrack = Pled.filters.setImage("some image")(track);
+
+        track.should.have.ownProperty('params');
+        track.params.should.have.ownProperty('logo');
+        track.params.logo.should.be.equal('some image');
+    });
+
+    it("should replace image", function(){
+        let track = {params: {logo: 'old image'}};
+
+        let newTrack = Pled.filters.setImage("some image")(track);
+
+        track.should.have.ownProperty('params');
+        track.params.should.have.ownProperty('logo');
+        track.params.logo.should.be.equal('some image');
+    });
+});

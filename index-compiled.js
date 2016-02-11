@@ -244,6 +244,8 @@ Pled.CACHE_STATUS_OK = Symbol();
 Pled.CACHE_STATUS_MISSING = Symbol();
 Pled.CACHE_STATUS_OUTDATED = Symbol();
 
+Pled.filters = require('./filters');
+
 module.exports = Pled;
 
 //# sourceMappingURL=index-compiled.js.map
