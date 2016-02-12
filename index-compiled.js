@@ -52,9 +52,10 @@ class Pled {
      * See `samples` directory for an example.
      */
     handleRequest(request, response) {
-        let loader = request.query.force ? executeNoCache : execute;
+        let loader = request.query && request.query.force ? this.executeNoCache : this.execute;
 
-        loader().then(content => {
+        loader.call(this).then(content => {
+            //console.log(`Received content: ${content}`);
             //response.status(200);
             response.setHeader('Content-type', 'audio/x-mpegurl');
             response.setHeader("Content-Disposition", "attachment;filename=playlist.m3u");

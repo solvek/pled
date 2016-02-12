@@ -1,6 +1,6 @@
 {
   "name": "pled",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Merging and transforming m3u playlists",
   "main": "index.js",
   "scripts": {

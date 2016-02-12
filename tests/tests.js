@@ -3,6 +3,8 @@
  */
 "use strict";
 
+let util = require('util');
+
 let should = require('chai').should();
 let assert = require('chai').assert;
 
@@ -150,6 +152,34 @@ describe("Content generation", function(){
 
                 tracks.length.should.be.equal(5);
             });
+    });
+
+    it("should handle request", function(done){
+        let pled = new Pled(['test.m3u']);
+
+        let response = {
+            setHeader: function () {
+            },
+            end: function () {
+            },
+            write: function (text) {
+                //console.log(`Received http response: ${text}`);
+                let parsed = m3u.parse(text);
+                //console.log(`Parsed response: ${util.inspect(parsed)}`);
+                parsed.should.be.an('object');
+                parsed.should.have.ownProperty('tracks');
+                parsed.tracks.should.be.an('array');
+                parsed.tracks.length.should.equal(3);
+                done();
+            },
+            status: function () {
+            },
+            send: function (text) {
+                console.log("Sent content: " + text);
+            }
+        };
+
+        pled.handleRequest({}, response);
     });
 });
 
