@@ -4,6 +4,7 @@
 "use strict";
 
 let util = require('util');
+let fs = require('fs');
 
 let should = require('chai').should();
 let assert = require('chai').assert;
@@ -65,8 +66,6 @@ describe("Pled utils", function(){
 });
 
 describe("Loading cache", function(){
-    let fs = require('fs');
-
     it("should fail loading from cache if cachePath not specified", function(){
         let pled = new Pled(['ddddd']);
 
@@ -151,6 +150,29 @@ describe("Content generation", function(){
                 tracks.should.be.an('array');
 
                 tracks.length.should.be.equal(5);
+            });
+    });
+
+    it("should store to cache", function(){
+        let cachePath = 'cache.m3u';
+
+        let pled = new Pled({
+            sources: ['test.m3u'],
+            cachePath: cachePath
+        });
+
+        try {
+            fs.accessSync(cachePath);
+            fs.unlinkSync(cachePath);
+        }
+        catch(e){}
+
+        return pled.executeNoCache()
+         .then(function(content){
+                //console.log(content);
+                let fromFile = fs.readFileSync(cachePath, 'utf8');
+                //console.log(`From file: ${fromFile}`);
+                content.should.be.equal(fromFile);
             });
     });
 

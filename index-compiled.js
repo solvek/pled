@@ -98,7 +98,7 @@ class Pled {
         return this._handleSourceTail(0, { tracks: [] }).then(result => {
             let content = m3u.format(result);
             if (obj.options.cachePath) {
-                obj.saveCache(content);
+                return obj.saveCache(content);
             }
             return content;
         });
@@ -153,7 +153,7 @@ class Pled {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve();
+                    resolve(content);
                 }
             });
         });

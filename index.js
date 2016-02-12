@@ -102,7 +102,7 @@ class Pled{
             .then(result => {
                 let content = m3u.format(result);
                 if (obj.options.cachePath){
-                    obj.saveCache(content);
+                    return obj.saveCache(content);
                 }
                 return content;
             });
@@ -160,7 +160,7 @@ class Pled{
                         reject(err);
                     }
                     else {
-                        resolve();
+                        resolve(content);
                     }
                 });
             });

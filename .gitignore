@@ -31,3 +31,5 @@ build/Release
 
 .idea/workspace.xml
 
+tests/cache.m3u
+
