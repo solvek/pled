@@ -53,6 +53,8 @@ var filters = [
     f.forSource('http://iptv.proline.net.ua/playlist/iptv.m3u', f.setGroup('Інші')),
     f.forSource("http://iptv.slynet.tv/FreeSlyNet.m3u", f.setGroup('FreeSlyNet')),
     
+    f.forGroup("Sport", fsetGroup('Action'))
+    
     // 1+1
     f.forStream('udp://@226.226.1.1:1234', f.setGroup('Новини')),
     f.forStream('udp://@226.226.1.1:1234', f.setImage('http://iptv.proline.net.ua/images/channel/1plus1.jpg')),
