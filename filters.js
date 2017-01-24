@@ -41,6 +41,19 @@ module.exports = {
             return modifier(track, sourceActual, collected);
         }
     },
+    
+    
+    forGroup: function(group, modifier){
+        return function(track, source, collected){
+            ensureTrackParams(track);
+            if (group != track.params['group-title']){
+                return track;
+            }
+
+            return modifier(track, group, collected);
+        }
+    },
+
 
     // track modifiers
     remove: function(){
